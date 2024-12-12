@@ -4,18 +4,15 @@ import mongoose from "mongoose"
 import express from "express"
 import { DB_NAME } from "./constants.js";
 import connectDB from "./db/index.js";
-import { configDotenv } from "dotenv"
-<<<<<<< HEAD
 import { app } from './app.js';
-=======
->>>>>>> b1f485c72a59e91fd68cad774651166059029c5a
+
+
 
 
 dotenv.config({
     path:"./env"
 });
 
-<<<<<<< HEAD
 connectDB().then(
     () => {
         app.listen(process.env.PORT||8000, () => {
@@ -27,9 +24,8 @@ connectDB().then(
                 console.log("Connection to MongoDB failed !!!",err)
                 }
 )
-=======
 connectDB();
->>>>>>> b1f485c72a59e91fd68cad774651166059029c5a
+
 
 
 
