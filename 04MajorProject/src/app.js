@@ -24,4 +24,13 @@ app.use(urlencoded({
 app.use(express.static("public")) // this is to make data files public 
 app.use(cookieParser()) // this is to use cookie parser
 
+//  Routes import
+
+import userRouter from './routes/user.routes.js';
+
+
+// router decleration
+app.use('/api/v1/users', userRouter);  // http:localhost:8000/api/v1/users//register
+
+
 export {app};
