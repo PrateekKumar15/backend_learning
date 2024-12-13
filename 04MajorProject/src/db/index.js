@@ -11,5 +11,5 @@ const connectDB = async ()=> {
                 process.exit(1);
                 }
 }
-
+// this is where we actually connect our project from our database
 export default connectDB;

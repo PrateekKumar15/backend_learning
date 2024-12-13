@@ -1,8 +1,5 @@
 // require("dotenv").config({path: './env'})
 import dotenv from 'dotenv';
-import mongoose from "mongoose"
-import express from "express"
-import { DB_NAME } from "./constants.js";
 import connectDB from "./db/index.js";
 import { app } from './app.js';
 
@@ -11,7 +8,7 @@ import { app } from './app.js';
 
 dotenv.config({
     path:"./env"
-});
+}); // here we have configured dotenv
 
 connectDB().then(
     () => {
@@ -23,8 +20,8 @@ connectDB().then(
             (err) => {
                 console.log("Connection to MongoDB failed !!!",err)
                 }
-)
-connectDB();
+)  // this is to check connection of our project with our database and forward a port to run the app
+
 
 
 
