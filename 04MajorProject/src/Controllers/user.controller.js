@@ -14,7 +14,7 @@ const registerUser = asyncHandler(async(req,res)=> {
 // check from user response return response
 
 const {fullName, email, username,password} =  req.body
-console.log("email",email);
+// console.log("email",email);
 
 if (
     [fullName,email,username,password].some((field)=> field?.trim() ==="")
@@ -29,8 +29,18 @@ if(existedUser){
     throw new ApiError(409,"User with email or username already exists")
     }
     const avatarLocalPath =req.files?.avatar[0]?.path
+
+
     // console.log(req.files.avatar); // structure of avatar is like a object in a array
-    const coverImageLocalPath =req.files?.coverImage[0]?.path;
+
+
+    // const coverImageLocalPath =req.files?.coverImage[0]?.path;
+let coverImageLocalPath;
+if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length>0){
+    coverImageLocalPath =req.files.coverImage[0].path;
+}
+
+
 if(!avatarLocalPath){
     throw new ApiError(400,"Avatar file is required")
 }
@@ -51,7 +61,7 @@ const user = await User.create ({
     password,
     username: username.toLowerCase()
 })
-console.log(user)
+// console.log(user)
 
 const createdUser = await User.findById(user._id).select(
     '-password -refreshToken'
@@ -66,4 +76,39 @@ return res.status(201).json(
 )
 
 })
-export {registerUser}
+
+const loginUser =  asyncHandler(async(req,res)=>{
+//  request body -> data
+//  username or email
+// find the user 
+// password check
+//  if user is found and password is correct 
+//  create refresh and access token
+// send cookie 
+
+const {email,username,password} = req.body
+
+console.log(req.body)
+if (!username || !email){
+    throw new ApiError(400,"Username or Email is required");
+
+}
+
+const user = await User.findOne({
+    $or: [{email}, {username}]
+})
+
+if(!user){
+    throw new ApiError(404,"User doesn't exist")
+}
+
+const isPasswordValid = await user.isPasswordCorrect(password);
+if(!isPasswordValid){
+    throw new ApiError(401,"Invalid Password")
+};
+
+
+})
+
+
+export {registerUser,loginUser}
