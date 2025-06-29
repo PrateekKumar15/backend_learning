@@ -3,6 +3,17 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 import {User} from "../models/user.model.js"
 import {uploadonCloudinary}  from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+const generateAccessAndRefreshToken = async (userId)=> {
+    try{
+        const user = await User.findById(userId);const accessToken = User.generateAccessToken();const refreshToken =user.generateRefreshToken();
+        user.refreshToken = refreshToken;await user.save({validateBeforeSave:false});
+        return {accessToken,refreshToken};
+        
+    }catch(error){
+        throw new ApiError(500,"Something went wrong while generating the tokens");   
+
+    }
+}
 const registerUser = asyncHandler(async(req,res)=> {
 //   get user details from frontend
 // Validation - not empty
@@ -44,7 +55,7 @@ if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.leng
 if(!avatarLocalPath){
     throw new ApiError(400,"Avatar file is required")
 }
-console.log(avatarLocalPath)
+// console.log(avatarLocalPath)
 const avatar = await uploadonCloudinary(avatarLocalPath);   
 // console.log(avatar);
 const coverImage = await uploadonCloudinary(coverImageLocalPath);
@@ -77,6 +88,7 @@ return res.status(201).json(
 
 })
 
+
 const loginUser =  asyncHandler(async(req,res)=>{
 //  request body -> data
 //  username or email
@@ -92,7 +104,7 @@ console.log(req.body)
 if (!username || !email){
     throw new ApiError(400,"Username or Email is required");
 
-}
+} 
 
 const user = await User.findOne({
     $or: [{email}, {username}]
@@ -104,8 +116,10 @@ if(!user){
 
 const isPasswordValid = await user.isPasswordCorrect(password);
 if(!isPasswordValid){
-    throw new ApiError(401,"Invalid Password")
+    throw new ApiError(401,"Invalid user Credentials")
 };
+
+const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id)
 
 
 })
